@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macu Orders</title>
+
+    <style>
+        /* Style for each table block */
+        .table-block {
+            border: 2px solid #000; /* Border around the whole table block */
+            margin: 10px 0;
+            padding: 10px;
+        }
+
+        /* Style for each order item */
+        .order-item {
+            padding: 5px;
+            border-bottom: 1px solid #d3d3d3; /* Light grey line to separate orders */
+        }
+
+        /* Remove bottom border from the last item */
+        .order-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>訂單列表</h1>
+    <div id="controls">
+        <button id="toggleButton" onclick="toggleDisplayMode()"></button>
+    </div>
+    <div id="orders-container"></div>
+</body>
+</html>
+
+<script>
+
+    let displayMode = 'grouped';
+    document.getElementById('toggleButton').textContent = displayMode;
+    function toggleDisplayMode()
+    {
+        displayMode = (displayMode === 'grouped') ? 'sorted' : 'grouped';
+        document.getElementById('toggleButton').textContent = displayMode;
+        fetchOrders();
+    }
+    // Fetch orders from backend
+    async function fetchOrders() {
+        try {
+            const response = await fetch('/api/orders');
+            const orders = await response.json();
+            displayOrders(orders);
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+        }
+    }
+
+    // Display orders
+    function displayOrders(orders) {
+        const container = document.getElementById('orders-container');
+        container.innerHTML = ''; // Clear previous content
+
+        // Group orders by table_id
+        const groupedOrders = orders.reduce((groups, order) => {
+            if (!groups[order.table_num_id]) {  //如果這個桌號不在group
+                groups[order.table_num_id] = [];
+            }
+            groups[order.table_num_id].push(order);
+            return groups;
+        }, {});
+
+        if(displayMode === 'grouped')
+        {
+            // Iterate over each table_id group
+            Object.keys(groupedOrders).forEach(tableId => {
+                const tableDiv = document.createElement('div');
+                tableDiv.classList.add('table-block'); // Apply CSS class for styling
+
+                const tableHeader = document.createElement('h3');
+                tableHeader.textContent = `桌號: ${tableId}`;
+                tableDiv.appendChild(tableHeader);
+
+                // Display orders within the same table_id
+                groupedOrders[tableId].forEach(order => {
+                    const orderDiv = document.createElement('div');
+                    orderDiv.classList.add('order-item'); // Apply CSS class for each order
+
+                    // Display order details
+                    let degreesText = '';
+                    order.Options.forEach(option => {
+                        degreesText += `<p>${option.Option_Type.name}: ${option.name}</p>`;
+                    });
+
+                    orderDiv.innerHTML = `
+                        <p>Order ID: ${order.order_id}</p>
+                        <p>Item: ${order.Product.name}</p>
+                        ${degreesText}
+                        <label for="state-select-${order.order_id}">State:</label>
+                        <select id="state-select-${order.order_id}" onchange="updateOrderState(${order.order_id})"> 
+                            <option value="pending" ${order.serve_state === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="preparing" ${order.serve_state === 'preparing' ? 'selected' : ''}>Preparing</option>
+                            <option value="waiting for delivery" ${order.serve_state === 'waiting for delivery' ? 'selected' : ''}>Waiting for Delivery</option>
+                            <option value="completed" ${order.serve_state === 'completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                    `;
+                    tableDiv.appendChild(orderDiv);
+                });
+
+                container.appendChild(tableDiv);
+            });
+        }
+        else if(displayMode === 'sorted')
+        {
+            orders.sort((a, b) => a.order_id - b.order_id);
+            orders.forEach(order => {
+
+                let degreesText = '';
+                order.Options.forEach(option => {
+                    degreesText += `<p>${option.Option_Type.name}: ${option.name}</p>`;
+                });
+
+                const timeBlock = document.createElement('div');
+                timeBlock.className = 'time-block';
+                timeBlock.innerHTML = `
+                        <p>Order ID: ${order.order_id}</p>
+                        <p>Item: ${order.Product.name}</p>
+                        ${degreesText}
+                        <label for="state-select-${order.order_id}">State:</label>
+                        <select id="state-select-${order.order_id}" onchange="updateOrderState(${order.order_id})"> 
+                            <option value="pending" ${order.serve_state === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="preparing" ${order.serve_state === 'preparing' ? 'selected' : ''}>Preparing</option>
+                            <option value="waiting for delivery" ${order.serve_state === 'waiting for delivery' ? 'selected' : ''}>Waiting for Delivery</option>
+                            <option value="completed" ${order.serve_state === 'completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                    `;
+                    container.appendChild(timeBlock);
+            });
+        }
+    
+    }
+
+    // Update order state
+    async function updateOrderState(orderId) {
+        const selectElement = document.getElementById(`state-select-${orderId}`);
+        const newState = selectElement.value;
+
+        try {
+            const response = await fetch(`/api/orders/${orderId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ state: newState })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update order state');
+            }
+
+            console.log(`Order ${orderId} state updated to ${newState}`);
+        } catch (error) {
+            console.error('Error updating order state:', error);
+        }
+    }
+
+    // Fetch orders when the page loads
+    fetchOrders();
+</script>

@@ -1,0 +1,4 @@
+﻿product_id,product_name,price,description,available,category_id
+1,紅茶拿鐵,65,香濃牛奶搭配錫蘭紅茶，別有一番風味,TRUE,1
+2,芝芝金萱雙Q,60,金萱為基底，配上厚厚奶蓋跟豐富的口感,TRUE,2
+3,百香雙Q果,65,百香果加上綠茶，還有豐富的口感,TRUE,3
