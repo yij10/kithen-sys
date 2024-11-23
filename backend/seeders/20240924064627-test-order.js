@@ -14,8 +14,8 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-    // const passwd = await bcrypt.hash('hi', process.env.JWT_SECRET)
-    const passwd = "hi";
+    const passwd = await bcrypt.hash('hi', process.env.VUE_APP_JWT_SECRET)
+    // const passwd = "hi";
     await queryInterface.bulkInsert('Users', [
       { name: '王曉明', password: passwd, phone: '0912345678', email: 'mingming@gmail.com', admin: false, createdAt: new Date(), updatedAt: new Date() },
       { name: '陳大明', password: passwd, phone: '0923456789', email: 'chen@gmail.com', admin: false, createdAt: new Date(), updatedAt: new Date() },

@@ -145,7 +145,8 @@ export default {
                     const productIndex = category.Products.findIndex(p => p.id === item.id);
                     if (productIndex !== -1) {
                         // 更新當前產品的數據
-                        this.$set(category.Products, productIndex, data);
+                        // this.$set(category.Products, productIndex, data);
+                        category.Products[productIndex] = data;
                     }
                 }
             })
@@ -153,7 +154,7 @@ export default {
                 console.error('Error updating item:', error);
                 this.showNotification("更新失敗，請稍後再試", "error");
             });
-            this.showNotification("菜單變更成功", "success");
+            // this.showNotification("菜單變更成功", "success");
         },
 
         cancelChanges(item) {
