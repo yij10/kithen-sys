@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import ShowOrder from '../components/ShowOrder.vue'
 import ManuManagement from '../components/ManuManagement.vue'
+import ChargePage from '../components/ChargePage.vue'
 
 Vue.use(VueRouter)
 
@@ -23,6 +24,11 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     // component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
     component: ManuManagement
+  },
+  {
+    path: '/charge-page',
+    name: 'ChargePage',
+    component: ChargePage
   }
 ]
 

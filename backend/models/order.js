@@ -25,12 +25,22 @@ module.exports = (sequelize, DataTypes) => {
       Order.belongsTo(models.Table, {
         foreignKey: 'table_id'
       });
+      Order.belongsToMany(models.Coupon, {
+        through: models.User_Coupon,
+        foreignKey: 'order_id',
+        otherKey: 'coupon_id'
+      });
     }
   }
   Order.init({
-    user_id: DataTypes.INTEGER,
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    table_id: DataTypes.INTEGER,
     price: DataTypes.INTEGER,
-    paid: DataTypes.BOOLEAN,
+    paid_state: DataTypes.BOOLEAN,
+    serve_state: DataTypes.BOOLEAN,
     handler_id: {
       type: DataTypes.INTEGER,
       allowNull: true

@@ -25,7 +25,7 @@ async function get_order_item_name(req, res)
                 },
                 {
                     model: Order,
-                    attributes: ['table_id', 'user_id'],
+                    attributes: ['table_id', 'user_id', 'serve_state', 'paid_state'],
                 },
                 {
                     model: Option,
@@ -44,7 +44,10 @@ async function get_order_item_name(req, res)
                 // }
             ],
             attributes: ['id', 'serve_state', 'createdAt'],
-            where: {serve_state: statesArray},
+            where: {
+                serve_state: statesArray,
+                paid_state: false
+            },
         });
 
 

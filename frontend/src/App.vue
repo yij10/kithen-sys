@@ -21,7 +21,8 @@
 
     <nav>
       <router-link to="/show-orders">訂單列表</router-link> |
-      <router-link to="/manu-management">管理菜單</router-link>
+      <router-link to="/manu-management">管理菜單</router-link> |
+      <router-link to="charge-page">結帳系統</router-link>
     </nav>
 
     <div>    <!--左上角的選單-->

@@ -92,7 +92,7 @@ async function update_menu(req, res) {
             if (!existingOption) {
                 // 新增不存在於資料庫的選項並設置 isDelete 為 false
                 await Product_Option_Type.create({
-                    product_id: productId,
+                    product_id: item.id,
                     option_type_id: optionTypeId,
                     isDelete: false,
                 });
@@ -119,7 +119,7 @@ async function update_menu(req, res) {
 }
 
 router.get('/show-menu', get_menu);
-router.get('/get-all-options', auth, checkAdmin, get_option);
+router.get('/get-all-options', get_option);
 router.put('/update-item/:id', auth, checkAdmin, update_menu)
 
 module.exports = router;
